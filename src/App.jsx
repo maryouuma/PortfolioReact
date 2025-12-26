@@ -7,20 +7,20 @@ import ContactForm from "./components/Formulaire/FormulaireG6.jsx";
 import Navbar from "./components/Commun/Navbar.jsx"; // <-- import ajouté
 import NotFound from "./components/Commun/NotFound.jsx"; // <-- import ajouté
 import { Routes, Route, Navigate, useLocation } from "react-router-dom"; // <-- Routes ajouté
-import AdminLayout from "./components/admin/AdminLayout.jsx";
-import AdminDashboard from "./components/admin/Dashboard.jsx";
-import AdminUsers from "./components/Admin/Users.jsx";
-import AdminAnalytics from "./components/admin/Analytics.jsx";
-import AdminSettings from "./components/admin/Settings.jsx";
-import ProtectedRoute from "./components/admin/ProtectedRoute.jsx";
-import Logout from "./components/Accueil/Logout.jsx"; // <-- import ajouté
-import Login from "./components/Authentification/Login.jsx"; // <-- importe Login
+import AdminLayout from "./components/admin/AdminLayout";
+import AdminDashboard from "./components/admin/Dashboard";
+import AdminUsers from "./components/Admin/Users";
+import AdminAnalytics from "./components/admin/Analytics";
+import AdminSettings from "./components/admin/Settings";
+import ProtectedRoute from "./components/admin/ProtectedRoute";
+import Logout from "./components/Accueil/Logout"; // <-- import ajouté
+import Login from "./components/Authentification/Login"; // <-- importe Login
 import Projets from "./components/Accueil/Projets.jsx";
-import AdminFormSubmissions from "./components/Admin/AdminFormSubmissions.jsx";
-import ProjectsAdminPage from "./components/Admin/ProjectsAdminPage.jsx";
-import ProjectsList from "./Pages/ProjectsList.jsx";
-import ProjectDetails from "./Pages/ProjectDetails.jsx";
-import Profile from "./components/Profile.jsx";
+import AdminFormSubmissions from "./components/Admin/AdminFormSubmissions";
+import ProjectsAdminPage from "./components/Admin/ProjectsAdminPage";
+import ProjectsList from "./Pages/ProjectsList";
+import ProjectDetails from "./Pages/ProjectDetails";
+import Profile from "./components/Profile";
 
 function App() {
   const isAuthenticated = Boolean(localStorage.getItem("authToken"));
