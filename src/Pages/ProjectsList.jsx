@@ -5,7 +5,7 @@ import { Folder, Eye, Code2 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import { FadeIn, ScaleIn, SlideIn } from "../components/Animations/Animations";
 
-const API_URL = "http://localhost:4000/projects";
+const API_URL = "https://6946cd13ca6715d122f8f168.mockapi.io/projects";
 
 function ProjectsList() {
   const [projects, setProjects] = useState([]);
