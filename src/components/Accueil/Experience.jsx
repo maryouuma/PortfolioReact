@@ -6,10 +6,10 @@ import {
   FileText,
   CheckCircle,
 } from "lucide-react";
-import businessImage from "../../assets/business.jpg";
-import sparkImage from "../../assets/spark.jpeg";
-import iitImage from "../../assets/iit.png";
-import cvPdf from "../../assets/CV_Maryam_BESBES.pdf";
+const businessImage = "/assets/assets/business.jpg";
+const sparkImage = "/assets/assets/spark.jpeg";
+const iitImage = "/assets/assets/iit.png";
+const cvPdf = "/assets/CV_Maryam_BESBES.pdf";
 import { FadeIn, ScaleIn, SlideIn } from "../Animations/Animations";
 
 const Experience = () => {
@@ -187,7 +187,10 @@ const Experience = () => {
                     index % 2 === 0 ? "md:text-right" : "md:col-start-2"
                   }`}
                 >
-                  <FadeIn delay={1.2 + index * 0.2} direction={index % 2 === 0 ? "right" : "left"}>
+                  <FadeIn
+                    delay={1.2 + index * 0.2}
+                    direction={index % 2 === 0 ? "right" : "left"}
+                  >
                     <div className="hidden md:block">
                       <div className="inline-block bg-gray-800/50 backdrop-blur-xl rounded-xl shadow-lg p-6 border border-gray-700/50">
                         <div className="flex items-center gap-2 font-semibold mb-2 justify-end bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">

@@ -8,7 +8,8 @@ import {
   FaEnvelope,
 } from "react-icons/fa";
 import { Sparkles, Code, Zap } from "lucide-react";
-import moi from "../../assets/moi.jpg";
+
+const moi = "/assets/assets/moi.jpg";
 import { FadeIn, ScaleIn, SlideIn } from "../Animations/Animations";
 
 const Hero = () => {
