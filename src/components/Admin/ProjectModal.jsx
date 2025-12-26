@@ -1,8 +1,8 @@
-// src/components/ProjectModal.jsx
-import { useState } from "react";
-import { X, Save } from "lucide-react";
+import { useEffect, useState } from "react";
+import { X, Save, Plus } from "lucide-react";
 import { FaProjectDiagram } from "react-icons/fa";
 import { createProject, updateProject } from "../api/projectsApi";
+import { createPortal } from "react-dom";
 
 function ProjectModal({ isOpen, onClose, onSuccess, initialProject = null }) {
   const [loading, setLoading] = useState(false);
@@ -12,6 +12,9 @@ function ProjectModal({ isOpen, onClose, onSuccess, initialProject = null }) {
     description: initialProject?.description || "",
     techStack: initialProject?.techStack?.join(", ") || "",
     status: initialProject?.status || "draft",
+    githubUrl: initialProject?.githubUrl || "",
+    liveUrl: initialProject?.liveUrl || "",
+    documentationUrl: initialProject?.documentationUrl || "",
   });
 
   const isEditMode = Boolean(initialProject);
@@ -30,6 +33,31 @@ function ProjectModal({ isOpen, onClose, onSuccess, initialProject = null }) {
       [name]: value,
     }));
   };
+
+  useEffect(() => {
+    if (isOpen && initialProject) {
+      setFormData({
+        title: initialProject.title || "",
+        description: initialProject.description || "",
+        techStack: initialProject.techStack?.join(", ") || "",
+        status: initialProject.status || "draft",
+        githubUrl: initialProject.githubUrl || "",
+        liveUrl: initialProject.liveUrl || "",
+        documentationUrl: initialProject.documentationUrl || "",
+      });
+    } else if (isOpen && !initialProject) {
+      setFormData({
+        title: "",
+        description: "",
+        techStack: "",
+        status: "draft",
+        githubUrl: "",
+        liveUrl: "",
+        documentationUrl: "",
+      });
+    }
+    setMessage({ type: "", text: "" });
+  }, [isOpen, initialProject]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,10 +79,12 @@ function ProjectModal({ isOpen, onClose, onSuccess, initialProject = null }) {
           .map((t) => t.trim())
           .filter(Boolean),
         status: formData.status,
+        githubUrl: formData.githubUrl.trim() || null,
+        liveUrl: formData.liveUrl.trim() || null,
+        documentationUrl: formData.documentationUrl.trim() || null,
       };
 
       if (isEditMode) {
-        // Mode édition
         const updated = await updateProject(initialProject.id, {
           ...initialProject,
           ...projectData,
@@ -65,7 +95,6 @@ function ProjectModal({ isOpen, onClose, onSuccess, initialProject = null }) {
           handleClose();
         }, 1000);
       } else {
-        // Mode création
         const created = await createProject(projectData);
         showMessage("success", "Projet créé avec succès !");
         setTimeout(() => {
@@ -92,6 +121,9 @@ function ProjectModal({ isOpen, onClose, onSuccess, initialProject = null }) {
       description: "",
       techStack: "",
       status: "draft",
+      githubUrl: "",
+      liveUrl: "",
+      documentationUrl: "",
     });
     setMessage({ type: "", text: "" });
     onClose();
@@ -99,9 +131,16 @@ function ProjectModal({ isOpen, onClose, onSuccess, initialProject = null }) {
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-800/95 backdrop-blur-xl rounded-3xl border border-gray-700/50 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={handleClose}
+      />
+
+      {/* Modal */}
+      <div className="relative bg-gray-800/95 backdrop-blur-xl rounded-3xl border border-gray-700/50 max-w-3xl w-full shadow-2xl max-h-[90vh] overflow-y-auto z-10">
         {/* Header */}
         <div className="bg-gradient-to-r from-pink-600/20 to-purple-600/20 p-8 border-b border-gray-700/50 relative sticky top-0 z-10">
           <button
@@ -174,9 +213,9 @@ function ProjectModal({ isOpen, onClose, onSuccess, initialProject = null }) {
             {/* Stack technique */}
             <div>
               <label className="block text-sm font-semibold text-gray-300 mb-2">
-                Stack technique
+                Technologies
                 <span className="text-gray-500 text-xs ml-2">
-                  (séparée par des virgules)
+                  (séparées par des virgules)
                 </span>
               </label>
               <input
@@ -185,6 +224,51 @@ function ProjectModal({ isOpen, onClose, onSuccess, initialProject = null }) {
                 value={formData.techStack}
                 onChange={handleInputChange}
                 placeholder="React, Node.js, MySQL..."
+                className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 transition-colors"
+              />
+            </div>
+
+            {/* URLs */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-300 mb-2">
+                  URL GitHub
+                </label>
+                <input
+                  type="url"
+                  name="githubUrl"
+                  value={formData.githubUrl}
+                  onChange={handleInputChange}
+                  placeholder="https://github.com/..."
+                  className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-300 mb-2">
+                  URL du site
+                </label>
+                <input
+                  type="url"
+                  name="liveUrl"
+                  value={formData.liveUrl}
+                  onChange={handleInputChange}
+                  placeholder="https://..."
+                  className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 transition-colors"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-300 mb-2">
+                URL Documentation
+              </label>
+              <input
+                type="url"
+                name="documentationUrl"
+                value={formData.documentationUrl}
+                onChange={handleInputChange}
+                placeholder="https://..."
                 className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 transition-colors"
               />
             </div>
@@ -239,7 +323,8 @@ function ProjectModal({ isOpen, onClose, onSuccess, initialProject = null }) {
           </form>
         </div>
       </div>
-    </div>
+    </div>,
+    document.getElementById("modal-root")
   );
 }
 

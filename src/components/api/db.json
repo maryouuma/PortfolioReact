@@ -8,6 +8,15 @@
       "priorité": "moyenne",
       "createdAt": "2025-12-18T14:16:23.456Z",
       "status": "done"
+    },
+    {
+      "id": "b19c",
+      "nom": "MARYAM",
+      "email": "besbesmaryouma66@gmail.com",
+      "message": "bbbbbbbbbbbbbbbbbbbbb",
+      "priorité": "haute",
+      "createdAt": "2025-12-25T23:34:47.401Z",
+      "status": "new"
     }
   ],
   "projects": [
@@ -109,7 +118,7 @@
         "Node.js",
         "Express.js"
       ],
-      "githubUrl": "https://github.com/ton-compte/portfolio-personnel-react",
+      "githubUrl": "https://github.com/maryouuma/PortfolioReact",
       "liveUrl": null,
       "status": "online"
     },

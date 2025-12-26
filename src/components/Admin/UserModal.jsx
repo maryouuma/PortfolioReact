@@ -3,6 +3,7 @@ import { useState } from "react";
 import { X, Save, Camera } from "lucide-react";
 import { FaUser, FaEnvelope, FaLock, FaUserCircle } from "react-icons/fa";
 import { createUser } from "../api/usersApi";
+import { createPortal } from "react-dom";
 
 function UserModal({ isOpen, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
@@ -39,7 +40,6 @@ function UserModal({ isOpen, onClose, onSuccess }) {
       return;
     }
 
-    // Vérifier la taille du fichier (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       showMessage("error", "L'image ne doit pas dépasser 5MB");
       return;
@@ -125,9 +125,16 @@ function UserModal({ isOpen, onClose, onSuccess }) {
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-800/95 backdrop-blur-xl rounded-3xl border border-gray-700/50 max-w-3xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={handleClose}
+      />
+
+      {/* Modal */}
+      <div className="relative bg-gray-800/95 backdrop-blur-xl rounded-3xl border border-gray-700/50 max-w-3xl w-full shadow-2xl max-h-[90vh] overflow-y-auto z-10">
         {/* Header */}
         <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 p-8 border-b border-gray-700/50 relative sticky top-0 z-10">
           <button
@@ -306,7 +313,8 @@ function UserModal({ isOpen, onClose, onSuccess }) {
           </form>
         </div>
       </div>
-    </div>
+    </div>,
+    document.getElementById("modal-root")
   );
 }
 
