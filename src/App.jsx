@@ -7,12 +7,12 @@ import ContactForm from "./components/Formulaire/FormulaireG6.jsx";
 import Navbar from "./components/Commun/Navbar.jsx"; // <-- import ajouté
 import NotFound from "./components/Commun/NotFound.jsx"; // <-- import ajouté
 import { Routes, Route, Navigate, useLocation } from "react-router-dom"; // <-- Routes ajouté
-import AdminLayout from "./components/admin/AdminLayout";
-import AdminDashboard from "./components/admin/Dashboard";
+import AdminLayout from "./components/Admin/AdminLayout";
+import AdminDashboard from "./components/Admin/Dashboard";
 import AdminUsers from "./components/Admin/Users";
-import AdminAnalytics from "./components/admin/Analytics";
-import AdminSettings from "./components/admin/Settings";
-import ProtectedRoute from "./components/admin/ProtectedRoute";
+import AdminAnalytics from "./components/Admin/Analytics";
+import AdminSettings from "./components/Admin/Settings";
+import ProtectedRoute from "./components/Admin/ProtectedRoute";
 import Logout from "./components/Accueil/Logout"; // <-- import ajouté
 import Login from "./components/Authentification/Login"; // <-- importe Login
 import Projets from "./components/Accueil/Projets.jsx";
