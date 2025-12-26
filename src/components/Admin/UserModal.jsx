@@ -1,4 +1,4 @@
-// src/components/UserModal.jsx
+// src/components/admin/UserModal.jsx
 import { useState } from "react";
 import { X, Save, Camera } from "lucide-react";
 import { FaUser, FaEnvelope, FaLock, FaUserCircle } from "react-icons/fa";
@@ -126,47 +126,47 @@ function UserModal({ isOpen, onClose, onSuccess }) {
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 animate-fadeIn">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/80 backdrop-blur-md"
         onClick={handleClose}
       />
 
-      {/* Modal */}
-      <div className="relative bg-gray-800/95 backdrop-blur-xl rounded-3xl border border-gray-700/50 max-w-3xl w-full shadow-2xl max-h-[90vh] overflow-y-auto z-10">
+      {/* Modal - Ajout du max-width et centrage */}
+      <div className="relative bg-gradient-to-br from-gray-800/98 via-gray-900/98 to-gray-800/98 backdrop-blur-xl rounded-3xl border border-gray-700/70 w-full max-w-4xl shadow-2xl shadow-purple-500/20 max-h-[90vh] overflow-y-auto z-10 animate-slideUpFade">
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 p-8 border-b border-gray-700/50 relative sticky top-0 z-10">
+        <div className="bg-gradient-to-r from-purple-600/30 via-pink-600/30 to-purple-600/30 p-10 border-b border-gray-700/70 relative sticky top-0 z-10 backdrop-blur-xl shadow-lg">
           <button
             onClick={handleClose}
-            className="absolute top-4 right-4 p-2 bg-gray-800/50 hover:bg-gray-700 rounded-full transition-colors"
+            className="absolute top-6 right-6 p-3 bg-gray-800/80 hover:bg-gray-700 rounded-xl transition-all duration-300 hover:scale-110 hover:rotate-90 shadow-lg"
           >
-            <X className="w-6 h-6 text-gray-300" />
+            <X className="w-6 h-6 text-gray-300 hover:text-white" />
           </button>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-8">
             {/* Photo de profil avec upload */}
-            <div className="relative w-24 h-24">
+            <div className="relative w-32 h-32 group flex-shrink-0">
               {formData.profilePhoto ? (
                 <img
                   src={formData.profilePhoto}
                   alt="Profile"
-                  className="w-full h-full rounded-full object-cover border-4 border-purple-500/30"
+                  className="w-full h-full rounded-2xl object-cover border-4 border-purple-500/50 shadow-xl shadow-purple-500/30 group-hover:border-purple-400 transition-all duration-300"
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/50">
-                  <FaUserCircle className="text-6xl text-white" />
+                <div className="w-full h-full bg-gradient-to-br from-purple-600 via-pink-600 to-purple-700 rounded-2xl flex items-center justify-center shadow-xl shadow-purple-500/50 group-hover:shadow-purple-500/70 transition-all duration-300">
+                  <FaUserCircle className="text-7xl text-white drop-shadow-lg" />
                 </div>
               )}
 
               {/* Bouton upload photo */}
-              <label className="absolute bottom-0 right-0 p-2 bg-purple-600 hover:bg-purple-700 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 shadow-lg">
+              <label className="absolute bottom-0 right-0 p-3 bg-gradient-to-br from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 rounded-xl cursor-pointer transition-all duration-300 hover:scale-110 shadow-xl hover:shadow-purple-500/50 border border-purple-400/50">
                 <input
                   type="file"
                   accept="image/*"
                   className="hidden"
                   onChange={handlePhotoChange}
                 />
-                <Camera className="w-5 h-5 text-white" />
+                <Camera className="w-6 h-6 text-white" />
               </label>
 
               {/* Bouton supprimer photo */}
@@ -175,127 +175,127 @@ function UserModal({ isOpen, onClose, onSuccess }) {
                   type="button"
                   onClick={handleRemovePhoto}
                   title="Supprimer la photo"
-                  className="absolute -top-2 -left-2 p-1.5 bg-red-600 hover:bg-red-700 rounded-full transition-all duration-300 hover:scale-110 shadow-lg"
+                  className="absolute -top-2 -left-2 p-2 bg-red-600 hover:bg-red-700 rounded-xl transition-all duration-300 hover:scale-110 shadow-xl border border-red-400/50"
                 >
-                  <X className="w-4 h-4 text-white" />
+                  <X className="w-5 h-5 text-white" />
                 </button>
               )}
             </div>
 
-            <div>
-              <h3 className="text-3xl font-bold text-white mb-2">
+            <div className="flex-1 min-w-0">
+              <h3 className="text-4xl font-bold text-white mb-3 drop-shadow-lg">
                 Nouvel Utilisateur
               </h3>
-              <span className="inline-block px-4 py-1.5 bg-purple-500/20 border border-purple-500/30 rounded-full text-purple-300 text-sm font-medium">
-                Ajouter un compte
+              <span className="inline-block px-5 py-2 bg-purple-500/30 border-2 border-purple-500/50 rounded-xl text-purple-200 text-sm font-bold shadow-lg backdrop-blur-sm">
+                ➕ Ajouter un compte
               </span>
             </div>
           </div>
         </div>
 
         {/* Contenu */}
-        <div className="p-8">
+        <div className="p-10">
           {message.text && (
             <div
-              className={`mb-6 p-4 rounded-xl border flex items-center gap-3 ${
+              className={`mb-6 p-5 rounded-2xl border-2 flex items-center gap-3 shadow-lg animate-slideIn ${
                 message.type === "success"
-                  ? "bg-green-500/10 border-green-500/30 text-green-400"
-                  : "bg-red-500/10 border-red-500/30 text-red-400"
+                  ? "bg-green-500/10 border-green-500/50 text-green-400"
+                  : "bg-red-500/10 border-red-500/50 text-red-400"
               }`}
             >
-              <span className="font-medium">{message.text}</span>
+              <span className="font-semibold text-base">{message.text}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-8">
             {/* Nom */}
-            <div>
-              <label className="flex items-center gap-3 text-gray-300 mb-3 font-medium">
-                <FaUser className="text-purple-400" />
-                Nom complet <span className="text-red-400">*</span>
+            <div className="bg-gradient-to-br from-gray-900/70 to-gray-800/70 p-7 rounded-2xl border border-gray-700/70 shadow-lg hover:shadow-xl hover:border-gray-600 transition-all duration-300">
+              <label className="flex items-center gap-3 text-gray-300 mb-4 font-semibold text-sm">
+                <FaUser className="text-purple-400 text-xl" />
+                Nom complet <span className="text-red-400 ml-1">*</span>
               </label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-gray-200 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
+                className="w-full px-5 py-4 bg-gray-900/60 border-2 border-gray-700 rounded-xl text-gray-200 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/40 transition-all text-lg shadow-inner"
                 placeholder="Votre nom complet"
                 autoFocus
               />
             </div>
 
             {/* Email */}
-            <div>
-              <label className="flex items-center gap-3 text-gray-300 mb-3 font-medium">
-                <FaEnvelope className="text-purple-400" />
-                Email <span className="text-red-400">*</span>
+            <div className="bg-gradient-to-br from-gray-900/70 to-gray-800/70 p-7 rounded-2xl border border-gray-700/70 shadow-lg hover:shadow-xl hover:border-gray-600 transition-all duration-300">
+              <label className="flex items-center gap-3 text-gray-300 mb-4 font-semibold text-sm">
+                <FaEnvelope className="text-purple-400 text-xl" />
+                Email <span className="text-red-400 ml-1">*</span>
               </label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-gray-200 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
+                className="w-full px-5 py-4 bg-gray-900/60 border-2 border-gray-700 rounded-xl text-gray-200 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/40 transition-all text-lg shadow-inner"
                 placeholder="votre.email@exemple.com"
               />
             </div>
 
             {/* Mot de passe et Rôle - Côte à côte */}
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-8">
               {/* Mot de passe */}
-              <div>
-                <label className="flex items-center gap-3 text-gray-300 mb-3 font-medium">
-                  <FaLock className="text-purple-400" />
-                  Mot de passe <span className="text-red-400">*</span>
+              <div className="bg-gradient-to-br from-gray-900/70 to-gray-800/70 p-7 rounded-2xl border border-gray-700/70 shadow-lg hover:shadow-xl hover:border-gray-600 transition-all duration-300">
+                <label className="flex items-center gap-3 text-gray-300 mb-4 font-semibold text-sm">
+                  <FaLock className="text-purple-400 text-xl" />
+                  Mot de passe <span className="text-red-400 ml-1">*</span>
                 </label>
                 <input
                   type="password"
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-gray-200 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
+                  className="w-full px-5 py-4 bg-gray-900/60 border-2 border-gray-700 rounded-xl text-gray-200 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/40 transition-all text-lg shadow-inner"
                   placeholder="••••••••"
                 />
-                <p className="mt-2 text-xs text-gray-500">
-                  Minimum 6 caractères
+                <p className="mt-3 text-xs text-gray-500 font-medium">
+                  ℹ Minimum 6 caractères
                 </p>
               </div>
 
               {/* Rôle */}
-              <div>
-                <label className="flex items-center gap-3 text-gray-300 mb-3 font-medium">
-                  <FaUserCircle className="text-purple-400" />
-                  Rôle <span className="text-red-400">*</span>
+              <div className="bg-gradient-to-br from-gray-900/70 to-gray-800/70 p-7 rounded-2xl border border-gray-700/70 shadow-lg hover:shadow-xl hover:border-gray-600 transition-all duration-300">
+                <label className="flex items-center gap-3 text-gray-300 mb-4 font-semibold text-sm">
+                  <FaUserCircle className="text-purple-400 text-xl" />
+                  Rôle <span className="text-red-400 ml-1">*</span>
                 </label>
                 <select
                   name="role"
                   value={formData.role}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-gray-200 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
+                  className="w-full px-5 py-4 bg-gray-900/60 border-2 border-gray-700 rounded-xl text-gray-200 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/40 transition-all text-lg shadow-inner cursor-pointer"
                 >
-                  <option value="user">Utilisateur</option>
-                  <option value="admin">Administrateur</option>
+                  <option value="user">👤 Utilisateur</option>
+                  <option value="admin">🔒 Administrateur</option>
                 </select>
               </div>
             </div>
 
             {/* Boutons */}
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-5 pt-6">
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 px-6 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-green-500/50 transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-8 py-5 bg-gradient-to-r from-green-600 via-emerald-600 to-green-600 text-white font-bold text-lg rounded-2xl hover:shadow-2xl hover:shadow-green-500/50 transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed border border-green-500/50"
               >
                 {loading ? (
                   <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                    <div className="animate-spin rounded-full h-6 w-6 border-3 border-white border-t-transparent"></div>
                     Enregistrement...
                   </>
                 ) : (
                   <>
-                    <Save className="w-5 h-5" />
-                    Ajouter
+                    <Save className="w-6 h-6" />
+                    Ajouter l'utilisateur
                   </>
                 )}
               </button>
@@ -304,9 +304,9 @@ function UserModal({ isOpen, onClose, onSuccess }) {
                 type="button"
                 onClick={handleClose}
                 disabled={loading}
-                className="flex-1 px-6 py-4 bg-gray-700 text-white font-semibold rounded-xl hover:bg-gray-600 transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-8 py-5 bg-gray-700 hover:bg-gray-600 text-white font-bold text-lg rounded-2xl transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed border border-gray-600 shadow-lg"
               >
-                <X className="w-5 h-5" />
+                <X className="w-6 h-6" />
                 Annuler
               </button>
             </div>

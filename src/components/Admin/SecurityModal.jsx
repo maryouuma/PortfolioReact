@@ -22,10 +22,12 @@ const SecurityModal = ({
     setShowPasswords({ ...showPasswords, [field]: !showPasswords[field] });
   };
 
+  if (!isOpen) return null;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       {/* Header personnalisé */}
-      <div className="bg-gradient-to-r from-cyan-600/20 to-cyan-700/20 p-8 border-b border-gray-700/50 -m-6 mb-6 rounded-t-2xl">
+      <div className="bg-gradient-to-r from-cyan-600/20 to-cyan-700/20 p-8 border-b border-gray-700/50 -m-6 mb-6 rounded-t-2xl sticky top-0 z-10 backdrop-blur-xl">
         <div className="flex items-center gap-6">
           <div className="w-24 h-24 bg-gradient-to-br from-cyan-600 to-cyan-700 rounded-full flex items-center justify-center shadow-lg shadow-cyan-500/50">
             <Shield className="w-12 h-12 text-white" />

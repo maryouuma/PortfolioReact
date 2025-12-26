@@ -13,10 +13,12 @@ const ProfileModal = ({
 }) => {
   const { colors } = useTheme();
 
+  if (!isOpen) return null;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       {/* Header personnalisé avec avatar */}
-      <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 p-8 border-b border-gray-700/50 -m-6 mb-6 rounded-t-2xl">
+      <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 p-8 border-b border-gray-700/50 -m-6 mb-6 rounded-t-2xl sticky top-0 z-10 backdrop-blur-xl">
         <div className="flex items-center gap-6">
           <div className="relative w-24 h-24">
             <div className="w-full h-full bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/50">

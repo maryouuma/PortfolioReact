@@ -1,108 +1,15 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Search, Edit, Trash2, UserCheck, Plus, X, Eye } from "lucide-react";
-import { FaUser, FaEnvelope, FaLock, FaUserCircle } from "react-icons/fa";
-import { getUsers, updateUser, deleteUser } from "../api/usersApi";
+import { Search, Trash2, UserCheck, Plus, Eye } from "lucide-react";
+import { FaUser, FaUserCircle } from "react-icons/fa";
+import { getUsers, deleteUser } from "../api/usersApi";
 import UserModal from "./UserModal";
-
-import { FadeIn, ScaleIn, SlideIn } from "../Animations/Animations";
-// Composant pour les champs modifiables inline
-const EditableField = ({
-  icon,
-  label,
-  value,
-  userId,
-  fieldName,
-  type = "text",
-  onUpdate,
-  users,
-  showMessage,
-}) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editValue, setEditValue] = useState(value);
-  const [isSaving, setIsSaving] = useState(false);
-
-  const handleSave = async () => {
-    setIsSaving(true);
-    try {
-      const userToUpdate = users.find((u) => u.id === userId);
-      const updatedUser = await updateUser(userId, {
-        ...userToUpdate,
-        [fieldName]: editValue,
-      });
-      onUpdate(editValue);
-      setIsEditing(false);
-      showMessage("success", `${label} mis à jour !`);
-    } catch (error) {
-      showMessage("error", "Erreur lors de la mise à jour");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  return (
-    <div className="bg-gray-900/50 p-6 rounded-xl border border-gray-700/50">
-      <label className="flex items-center gap-3 text-gray-400 mb-2 font-medium">
-        {icon}
-        {label}
-      </label>
-      {isEditing ? (
-        <div className="flex items-center gap-2 pl-7">
-          <input
-            type={type}
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-            className="flex-1 px-3 py-2 bg-gray-800 border border-purple-500 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            autoFocus
-          />
-          <button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="p-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors disabled:opacity-50"
-          >
-            {isSaving ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            ) : (
-              <svg
-                className="w-5 h-5 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            )}
-          </button>
-          <button
-            onClick={() => {
-              setIsEditing(false);
-              setEditValue(value);
-            }}
-            className="p-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
-          >
-            <X className="w-5 h-5 text-gray-300" />
-          </button>
-        </div>
-      ) : (
-        <div className="flex items-center gap-2 pl-7">
-          <p className="flex-1 text-2xl text-gray-200 font-semibold break-all">
-            {type === "password" ? "••••••••" : value}
-          </p>
-          <button
-            onClick={() => setIsEditing(true)}
-            className="p-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
-          >
-            <Edit className="w-5 h-5 text-white" />
-          </button>
-        </div>
-      )}
-    </div>
-  );
-};
+import UserDetailModal from "./UserDetailModal";
+import {
+  AnimatedPageWrapper,
+  AnimatedHeader,
+  AnimatedMessage,
+} from "../Animations/AnimatedPageWrapper";
+import { FadeIn } from "../Animations/Animations";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -148,7 +55,7 @@ const AdminUsers = () => {
   };
 
   const handleUserSuccess = (newUser) => {
-    fetchUsers(); // Recharger la liste complète depuis la BD
+    fetchUsers();
     showMessage("success", "Utilisateur ajouté avec succès !");
   };
 
@@ -158,7 +65,7 @@ const AdminUsers = () => {
     ) {
       try {
         await deleteUser(id);
-        fetchUsers(); // Recharger après suppression
+        fetchUsers();
         showMessage("success", "Utilisateur supprimé avec succès !");
       } catch (error) {
         console.error("Erreur lors de la suppression", error);
@@ -172,64 +79,22 @@ const AdminUsers = () => {
     setShowDetailModal(true);
   };
 
-  const handlePhotoChange = async (e, userId) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      showMessage("error", "Veuillez sélectionner une image valide");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      try {
-        const user = users.find((u) => u.id === userId);
-        const updatedUser = await updateUser(userId, {
-          ...user,
-          profilePhoto: reader.result,
-        });
-
-        setUsers(users.map((u) => (u.id === userId ? updatedUser : u)));
-        setSelectedUser(updatedUser);
-        showMessage("success", "Photo de profil mise à jour !");
-      } catch (error) {
-        console.error("Erreur lors de la mise à jour de la photo", error);
-        showMessage("error", "Erreur lors de la mise à jour de la photo");
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
   const closeDetailModal = () => {
     setShowDetailModal(false);
     setSelectedUser(null);
   };
 
   return (
-    <div className="space-y-6">
-      {message.text && (
-        <div
-          className={`mb-6 p-4 rounded-xl border flex items-center gap-3 ${
-            message.type === "success"
-              ? "bg-green-500/10 border-green-500/30 text-green-400"
-              : "bg-red-500/10 border-red-500/30 text-red-400"
-          }`}
-        >
-          <span className="font-medium">{message.text}</span>
-        </div>
-      )}
+    <AnimatedPageWrapper>
+      {/* Message de succès/erreur */}
+      <AnimatedMessage type={message.type} text={message.text} />
 
-      <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700/50 p-8 shadow-xl">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
-              Gestion des Utilisateurs
-            </h1>
-            <p className="text-gray-400">
-              Gérez et administrez tous les utilisateurs
-            </p>
-          </div>
+      {/* Header avec animation */}
+      <AnimatedHeader
+        icon={FaUser}
+        title="Gestion des Utilisateurs"
+        subtitle="Gérez et administrez tous les utilisateurs"
+        action={
           <button
             onClick={() => setShowAddModal(true)}
             className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105 flex items-center gap-2"
@@ -237,326 +102,156 @@ const AdminUsers = () => {
             <Plus className="w-5 h-5" />
             Ajouter un utilisateur
           </button>
+        }
+      />
+
+      {/* Barre de recherche - Animation séparée */}
+      <FadeIn delay={0.4} duration={0.8}>
+        <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700/50 p-6 shadow-xl">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Rechercher un utilisateur..."
+              className="w-full pl-12 pr-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+            />
+          </div>
         </div>
-      </div>
+      </FadeIn>
 
-      <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700/50 p-6 shadow-xl">
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Rechercher un utilisateur..."
-            className="w-full pl-12 pr-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
-          />
-        </div>
-      </div>
-
-      <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700/50 overflow-hidden shadow-xl">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-700">
-            <thead className="bg-gray-900/50">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  Photo
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  ID
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  Nom
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  Email
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  Rôle
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-700">
-              {filteredUsers.map((user, index) => (
-                <tr
-                  key={user.id}
-                  className="hover:bg-gray-900/30 transition-colors"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-500/30">
-                      {user.profilePhoto ? (
-                        <img
-                          src={user.profilePhoto}
-                          alt={user.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
-                          <FaUserCircle className="text-2xl text-white" />
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/10 border border-purple-500/30 rounded-lg text-sm font-semibold text-purple-300">
-                      <UserCheck className="w-4 h-4" />
-                      {user.id}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-gray-200 font-medium">
-                      {user.name}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-gray-400">{user.email}</span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        user.role === "admin"
-                          ? "bg-pink-500/10 text-pink-400 border border-pink-500/30"
-                          : "bg-cyan-500/10 text-cyan-400 border border-cyan-500/30"
-                      }`}
-                    >
-                      {user.role}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleViewDetails(user)}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/50"
-                      >
-                        <Eye className="w-4 h-4" />
-                        Voir
-                      </button>
-                      <button
-                        onClick={() => handleDeleteUser(user.id)}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-500/50"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        Supprimer
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-
-              {filteredUsers.length === 0 && (
+      {/* Table des utilisateurs - PAS D'ANIMATION SUR LES LIGNES */}
+      <FadeIn delay={0.6} duration={0.8}>
+        <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl border border-gray-700/50 overflow-hidden shadow-xl">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-700">
+              <thead className="bg-gray-900/50">
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center">
-                    <div className="flex flex-col items-center gap-4">
-                      <div className="w-16 h-16 bg-gray-700/50 rounded-full flex items-center justify-center">
-                        <Search className="w-8 h-8 text-gray-600" />
-                      </div>
-                      <p className="text-gray-500">Aucun utilisateur trouvé</p>
-                    </div>
-                  </td>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    Photo
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    ID
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    Nom
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    Email
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    Rôle
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              </thead>
+              <tbody className="divide-y divide-gray-700">
+                {filteredUsers.map((user) => (
+                  <tr
+                    key={user.id}
+                    className="hover:bg-gray-900/30 transition-colors"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-500/30">
+                        {user.profilePhoto ? (
+                          <img
+                            src={user.profilePhoto}
+                            alt={user.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
+                            <FaUserCircle className="text-2xl text-white" />
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/10 border border-purple-500/30 rounded-lg text-sm font-semibold text-purple-300">
+                        <UserCheck className="w-4 h-4" />
+                        {user.id}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="text-gray-200 font-medium">
+                        {user.name}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="text-gray-400">{user.email}</span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          user.role === "admin"
+                            ? "bg-pink-500/10 text-pink-400 border border-pink-500/30"
+                            : "bg-cyan-500/10 text-cyan-400 border border-cyan-500/30"
+                        }`}
+                      >
+                        {user.role === "admin" ? "🔑 Admin" : "👤 User"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <div className="flex items-center gap-2">
+                        {/*<button
+                          onClick={() => handleViewDetails(user)}
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600 to-cyan-700 hover:from-cyan-500 hover:to-cyan-600 text-white rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/50 border border-cyan-500/50"
+                        >
+                          <Eye className="w-4 h-4" />
+                          Voir
+                        </button>*/}
+                        <button
+                          onClick={() => handleDeleteUser(user.id)}
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-500/50 border border-red-500/50"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Supprimer
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
 
-      {/* Modal Ajouter - Composant partagé */}
+                {filteredUsers.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-12 text-center">
+                      <div className="flex flex-col items-center gap-4">
+                        <div className="w-16 h-16 bg-gray-700/50 rounded-full flex items-center justify-center">
+                          <Search className="w-8 h-8 text-gray-600" />
+                        </div>
+                        <p className="text-gray-500">
+                          Aucun utilisateur trouvé
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </FadeIn>
+
+      {/* Modal Ajouter */}
       <UserModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onSuccess={handleUserSuccess}
       />
 
-      {/* Modal Détails - AVEC MODIFICATION INLINE */}
-      {showDetailModal && selectedUser && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-700/50 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 p-8 border-b border-gray-700/50 relative">
-              <button
-                onClick={closeDetailModal}
-                className="absolute top-4 right-4 p-2 bg-gray-800/50 hover:bg-gray-700 rounded-full transition-colors"
-              >
-                <X className="w-6 h-6 text-gray-300" />
-              </button>
-              <div className="flex items-center gap-6">
-                <div className="relative w-32 h-32">
-                  {selectedUser.profilePhoto ? (
-                    <img
-                      src={selectedUser.profilePhoto}
-                      alt={selectedUser.name}
-                      className="w-full h-full rounded-full object-cover border-4 border-purple-500/30"
-                    />
-                  ) : (
-                    <div className="w-full h-full rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
-                      <FaUserCircle className="text-8xl text-white" />
-                    </div>
-                  )}
-
-                  <label className="absolute bottom-0 right-0 p-2 bg-purple-600 hover:bg-purple-700 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 shadow-lg">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => handlePhotoChange(e, selectedUser.id)}
-                    />
-                    <svg
-                      className="w-5 h-5 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                  </label>
-
-                  {selectedUser.profilePhoto && (
-                    <button
-                      onClick={async () => {
-                        if (window.confirm("Supprimer la photo de profil ?")) {
-                          try {
-                            const updatedUser = await updateUser(
-                              selectedUser.id,
-                              {
-                                ...selectedUser,
-                                profilePhoto: null,
-                              }
-                            );
-                            setUsers(
-                              users.map((u) =>
-                                u.id === selectedUser.id ? updatedUser : u
-                              )
-                            );
-                            setSelectedUser(updatedUser);
-                            showMessage("success", "Photo supprimée !");
-                          } catch {
-                            showMessage(
-                              "error",
-                              "Erreur lors de la suppression"
-                            );
-                          }
-                        }
-                      }}
-                      title="Supprimer la photo"
-                      className="absolute -top-2 -left-2 text-red-500 hover:text-red-700 cursor-pointer"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
-                  )}
-                </div>
-                <div>
-                  <h3 className="text-4xl font-bold text-white mb-3">
-                    {selectedUser.name}
-                  </h3>
-                  <span className="inline-block px-4 py-1.5 bg-purple-500/20 border border-purple-500/30 rounded-full text-purple-300 text-sm font-medium">
-                    {selectedUser.role === "admin"
-                      ? "Administrateur"
-                      : "Utilisateur"}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-8">
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* ID Utilisateur - NON MODIFIABLE */}
-                <div className="bg-gray-900/50 p-6 rounded-xl border border-gray-700/50">
-                  <label className="flex items-center gap-3 text-gray-400 mb-2 font-medium">
-                    <UserCheck className="text-purple-400" />
-                    ID Utilisateur
-                  </label>
-                  <p className="text-2xl text-gray-200 font-semibold pl-7">
-                    {selectedUser.id}
-                  </p>
-                </div>
-
-                {/* Nom - MODIFIABLE */}
-                <EditableField
-                  icon={<FaUser className="text-purple-400" />}
-                  label="Nom complet"
-                  value={selectedUser.name}
-                  userId={selectedUser.id}
-                  fieldName="name"
-                  users={users}
-                  showMessage={showMessage}
-                  onUpdate={(newValue) => {
-                    const updatedUser = { ...selectedUser, name: newValue };
-                    setSelectedUser(updatedUser);
-                    setUsers(
-                      users.map((u) =>
-                        u.id === selectedUser.id ? updatedUser : u
-                      )
-                    );
-                  }}
-                />
-
-                {/* Email - MODIFIABLE */}
-                <EditableField
-                  icon={<FaEnvelope className="text-purple-400" />}
-                  label="Email"
-                  value={selectedUser.email}
-                  userId={selectedUser.id}
-                  fieldName="email"
-                  type="email"
-                  users={users}
-                  showMessage={showMessage}
-                  onUpdate={(newValue) => {
-                    const updatedUser = { ...selectedUser, email: newValue };
-                    setSelectedUser(updatedUser);
-                    setUsers(
-                      users.map((u) =>
-                        u.id === selectedUser.id ? updatedUser : u
-                      )
-                    );
-                  }}
-                />
-
-                {/* Mot de passe - MODIFIABLE */}
-                <EditableField
-                  icon={<FaLock className="text-purple-400" />}
-                  label="Mot de passe"
-                  value={selectedUser.password}
-                  userId={selectedUser.id}
-                  fieldName="password"
-                  type="password"
-                  users={users}
-                  showMessage={showMessage}
-                  onUpdate={(newValue) => {
-                    const updatedUser = { ...selectedUser, password: newValue };
-                    setSelectedUser(updatedUser);
-                    setUsers(
-                      users.map((u) =>
-                        u.id === selectedUser.id ? updatedUser : u
-                      )
-                    );
-                  }}
-                />
-              </div>
-
-              <button
-                onClick={closeDetailModal}
-                className="w-full mt-6 px-6 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2"
-              >
-                <X className="w-5 h-5" />
-                Fermer
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      {/* Modal Détails */}
+      <UserDetailModal
+        isOpen={showDetailModal}
+        onClose={closeDetailModal}
+        user={selectedUser}
+        users={users}
+        setUsers={setUsers}
+        showMessage={showMessage}
+      />
+    </AnimatedPageWrapper>
   );
 };
 

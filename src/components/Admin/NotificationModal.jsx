@@ -27,10 +27,12 @@ const NotificationModal = ({
     { key: "sms", label: "SMS", description: "Recevez des alertes par SMS" },
   ];
 
+  if (!isOpen) return null;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       {/* Header personnalisé */}
-      <div className="bg-gradient-to-r from-pink-600/20 to-pink-700/20 p-8 border-b border-gray-700/50 -m-6 mb-6 rounded-t-2xl">
+      <div className="bg-gradient-to-r from-pink-600/20 to-pink-700/20 p-8 border-b border-gray-700/50 -m-6 mb-6 rounded-t-2xl sticky top-0 z-10 backdrop-blur-xl">
         <div className="flex items-center gap-6">
           <div className="w-24 h-24 bg-gradient-to-br from-pink-600 to-pink-700 rounded-full flex items-center justify-center shadow-lg shadow-pink-500/50">
             <Bell className="w-12 h-12 text-white" />

@@ -6,8 +6,9 @@ import api from "../api/axios";
 import { loginWithJson } from "../api/authApi";
 
 const Login = () => {
-  const [email, setEmail] = useState("eve.holt@reqres.in");
-  const [password, setPassword] = useState("cityslicka");
+  // Valeurs par défaut pour autocompletion
+  const [email, setEmail] = useState("user@21c-digital.com");
+  const [password, setPassword] = useState("user123");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -20,14 +21,34 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const { token, user } = await loginWithJson(email, password);
-      const data = { token, user };
-      if (data.token) {
-        localStorage.setItem("authToken", data.token);
+      // Vérification des identifiants mockés
+      if (email === "user@21c-digital.com" && password === "user123") {
+        // Authentification mock réussie
+        const mockToken = "mock_token_" + Date.now();
+        const mockUser = {
+          id: 1,
+          email: "user@21c-digital.com",
+          name: "Utilisateur Test",
+          role: "admin",
+        };
+
+        localStorage.setItem("authToken", mockToken);
+        localStorage.setItem("user", JSON.stringify(mockUser));
+
         navigate("/admin", { replace: true });
+      } else {
+        // Si les identifiants ne correspondent pas au mock, essayer l'API
+        const { token, user } = await loginWithJson(email, password);
+        const data = { token, user };
+
+        if (data.token) {
+          localStorage.setItem("authToken", data.token);
+          localStorage.setItem("user", JSON.stringify(data.user));
+          navigate("/admin", { replace: true });
+        }
       }
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Email ou mot de passe incorrect");
     } finally {
       setLoading(false);
     }
@@ -52,7 +73,6 @@ const Login = () => {
 
       <div className="w-full max-w-md bg-gray-800/50 backdrop-blur-xl rounded-3xl shadow-2xl p-10 border border-gray-700/50 relative z-10">
         <div className="text-center mb-8">
-          {/* Logo/Icône */}
           <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-500/50">
             <LogIn className="w-10 h-10 text-white" />
           </div>
@@ -129,13 +149,13 @@ const Login = () => {
           <div className="space-y-1 text-center">
             <p className="text-xs text-gray-400">
               <span className="font-semibold text-purple-300">Email:</span>{" "}
-              eve.holt@reqres.in
+              user@21c-digital.com
             </p>
             <p className="text-xs text-gray-400">
               <span className="font-semibold text-purple-300">
                 Mot de passe:
               </span>{" "}
-              cityslicka
+              user123
             </p>
           </div>
         </div>
