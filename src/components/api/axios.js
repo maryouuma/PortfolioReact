@@ -34,7 +34,8 @@ export default api;
 import axios from "axios";
 
 const axiosClient = axios.create({
-  baseURL: "https://6946cd13ca6715d122f8f168.mockapi.io/",
+  //baseURL: "https://6946cd13ca6715d122f8f168.mockapi.io/",
+  baseURL: "https://69500b468531714d9bcfb065.mockapi.io/",
   headers: {
     "Content-Type": "application/json",
   },
